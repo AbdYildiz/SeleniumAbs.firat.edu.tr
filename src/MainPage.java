@@ -10,24 +10,28 @@ import org.testng.annotations.*;
 
 public class MainPage {
     public WebDriver driver = new ChromeDriver();
-    public Actions action = new Actions(driver);
 
-    @BeforeSuite public void getSite(){
-        driver.get("https://testabs.firat.edu.tr/tr");
-        driver.manage().window().setSize(new Dimension(700,650));
+    @BeforeClass public void maximize(){
+        driver.manage().window().maximize();
     }
 
-    @Test public void tc1_emptySearchBox() {
-        driver.findElement(By.id("search")).click();
+    @BeforeMethod public void getSite(){
+        driver.get("https://abs.firat.edu.tr/tr");
+    }
+
+    @Test public void emptySearchBox(){
         driver.findElement(By.id("search")).sendKeys(Keys.ENTER);
+        Assert.assertEquals(driver.getCurrentUrl(),"https://abs.firat.edu.tr/tr?arast%C4%B1rma=");
     }
 
-    @Test public void tc2_invalidSearchChar(){
-        driver.findElement(By.id("search")).sendKeys(".?-*8");
+    @Test public void invalidSearchChar(){
+        String temp = ".?-*8";
+        driver.findElement(By.id("search")).sendKeys(temp);
         driver.findElement(By.id("search")).sendKeys(Keys.ENTER);
+        Assert.assertEquals(driver.getCurrentUrl(),"https://abs.firat.edu.tr/tr?arast%C4%B1rma=.%3F-*8");
     }
 
-    @Test public void tc3_isDropDownVisible(){
+    @Test public void isDropDownVisible(){
         driver.findElement(By.id("search")).sendKeys("mustafa");
         driver.findElement(By.id("search")).clear();
         driver.findElement(By.id("search")).click();
@@ -35,117 +39,60 @@ public class MainPage {
         Assert.assertFalse(dropDown);
     }
 
-    @Test public void tc4_mobileButton(){
-        driver.navigate().refresh();
-        boolean mButton = driver.findElement(By.xpath("//div[@class='mobileMenu']//a[contains(text(),'renci Bilgi Sistemi')]")).isDisplayed();
-        Assert.assertFalse(mButton);
+    @Test public void toLogin(){
+        driver.findElement(By.xpath("//a[contains(text(),'Yap')]")).click();
+        Assert.assertEquals(driver.getCurrentUrl(), "https://jasig.firat.edu.tr/cas/login?service=https%3A%2F%2Fabs.firat.edu.tr%2Ftr%2Flogin%2Ffirat%2Fcas");
     }
 
-    @Test public void tc5_isLoginVis(){
-        boolean login = driver.findElement(By.xpath("//p[contains(text(),'Yap')]")).isDisplayed();
-        Assert.assertTrue(login);
-    }
-
-    @Test public void tc6_pieChartData(){
-        //action.moveToElement(driver.findElement(By.xpath("//div[contains(text(),'1,293 (64.2%)')]"))).perform();
-
-    }
-    @Test public void tc8_pieChartRightClick() throws InterruptedException {
-        driver.findElement(By.xpath("//div[@class='chartSlideButton']//i[@class='fas fa-arrow-right-long']")).click();
-        driver.findElement(By.xpath("//div[@class='chartSlideButton']//i[@class='fas fa-arrow-right-long']")).click();
-        driver.findElement(By.xpath("//div[@class='chartSlideButton']//i[@class='fas fa-arrow-right-long']")).click();
-        Thread.sleep(1000);
-        boolean rClick = driver.findElement(By.xpath("//p[contains(text(),'n Erkek Oran')]")).isDisplayed();
-        Assert.assertTrue(rClick);
-    }
-
-    @Test public void tc9_pieChartLeftClick() throws InterruptedException {
-        driver.findElement(By.xpath("//div[@class='chartSlideButton']//i[@class='fas fa-arrow-left-long']")).click();
-        driver.findElement(By.xpath("//div[@class='chartSlideButton']//i[@class='fas fa-arrow-left-long']")).click();
-        driver.findElement(By.xpath("//div[@class='chartSlideButton']//i[@class='fas fa-arrow-left-long']")).click();
-        Thread.sleep(1000);
-        boolean lClick = driver.findElement(By.xpath("//p[contains(text(),'Akademik Personelin Unvanlara Göre Da')]")).isDisplayed();
-        Assert.assertTrue(lClick);
-    }
-
-    @Test public void tc10_lastUpdated(){
-        driver.findElement(By.xpath("//h6[contains(text(),'MEHMET GEÇ')]")).click();
-        Assert.assertEquals(driver.getCurrentUrl(),"https://testabs.firat.edu.tr/tr/190290057");
-        driver.navigate().back();
-    }
-
-    @Test public void tc12_lastAddedPubs() throws InterruptedException {
-        driver.findElement(By.xpath("//body//div[3]//div[3]//a[1]//i[1]")).click();
-        String expected = driver.getCurrentUrl();
-        driver.navigate().back();
-        Thread.sleep(5000);
-        driver.findElement(By.xpath("//h6[contains(text(),'Akiferinin Kirlenebilirli')]")).click();
-        Assert.assertEquals(driver.getCurrentUrl(),expected);
-    }
-
-    @Test public void tc15_location(){
-        driver.findElement(By.xpath("//a[contains(text(),'rat Üniversitesi')]")).click();
-        String expected = "https://www.google.com/maps/place/F%C4%B1rat+University/@38.6777569,39.2019556,17z/data="+
-                "!3m1!4b1!4m5!3m4!1s0x4076c043f0ec934d:0x97da54a9bdfebc9a!8m2!3d38.6777569!4d39.2019556";
-        Assert.assertEquals(driver.getCurrentUrl(),expected);
-        driver.navigate().back();
-    }
-
-    @Test public void tc16_upperRightMainPage(){
-        driver.findElement(By.xpath("//li[contains(text(),'ANASAYFA')]")).click();
-        String expected = "https://testabs.firat.edu.tr/tr";
-        Assert.assertEquals(driver.getCurrentUrl(),expected);
-    }
-
-    @Test public void tc17_statistics(){
+    @Test public void toStatistics(){
         driver.findElement(By.xpath("//li[contains(text(),'KLER')]")).click();
-        String expected = "https://testabs.firat.edu.tr/tr/statistics";
-        Assert.assertEquals(driver.getCurrentUrl(),expected);
-        driver.navigate().back();
+        Assert.assertEquals(driver.getCurrentUrl(), "https://abs.firat.edu.tr/tr/statistics");
     }
 
-    @Test public void tc18_login(){
-        driver.findElement(By.xpath("//div[@id='header-menu']//a//div")).click();
-        Assert.assertEquals(driver.getTitle(),"Central Authentication Service");
-        driver.navigate().back();
+    @Test public void toMain(){
+        driver.findElement(By.xpath("//li[contains(text(),'ANASAYFA')]")).click();
+        Assert.assertEquals(driver.getCurrentUrl(),"https://abs.firat.edu.tr/tr");
     }
 
-    @AfterTest public void tc19_quickAccessToOBS(){
-        driver.findElement(By.xpath("//html//body//div//div//div//nav//ul//li//div//ul//li//a[contains(text(),'renci Bilgi Sistemi')]")).click();
-        Assert.assertEquals(driver.getCurrentUrl(),"https://obs.firat.edu.tr/");
-        driver.navigate().back();
-    }
-    @AfterTest public void tc20_quickAccessToPBS(){
-        driver.findElement(By.xpath("//html//body//div//div//div//nav//ul//li//div//ul//li//a[contains(text(),'Personel Bilgi Sistemi')]")).click();
-        Assert.assertEquals(driver.getCurrentUrl(),"https://pbs.firat.edu.tr/");
-        driver.navigate().back();
+    @Test public void toEnglish(){
+        driver.findElement(By.cssSelector("div.header:nth-child(1) div.top-right-menus div.top-right nav:nth-child(1) ul:nth-child(1) li:nth-child(2) div.top-right-sub-list > a:nth-child(1)")).click();
+        driver.findElement(By.cssSelector("div.header:nth-child(1) div.top-right-menus div.top-right li:nth-child(2) div.top-right-sub-list ul:nth-child(3) li:nth-child(2) > a:nth-child(1)")).click();
+        Assert.assertEquals(driver.getCurrentUrl(),"https://abs.firat.edu.tr/en");
     }
 
-    @AfterTest public void tc21_quickAccessToUni(){
-        driver.findElement(By.xpath("//html//body//div//div//div//nav//ul//li//div//ul//li//a[contains(text(),'Üniversite Anasayfa')]")).click();
+    @Test public void toTurkish(){
+        driver.findElement(By.cssSelector("div.header:nth-child(1) div.top-right-menus div.top-right nav:nth-child(1) ul:nth-child(1) li:nth-child(2) div.top-right-sub-list > a:nth-child(1)")).click();
+        driver.findElement(By.xpath("//div[@class='top-right-sub-list']//a[contains(text(),'Türkçe')]")).click();
+        Assert.assertEquals(driver.getCurrentUrl(),"https://abs.firat.edu.tr/tr");
+    }
+
+    @Test public void toOBS(){
+        driver.findElement(By.xpath("//div[@class='top-right-sub-list']//a[contains(text(),'renci Bilgi Sistemi')]")).click();
+        Assert.assertEquals(driver.getCurrentUrl(), "https://obs.firat.edu.tr/");
+    }
+
+    @Test public void toPBS(){
+        driver.findElement(By.xpath("//div[@class='top-right-sub-list']//a[contains(text(),'Personel Bilgi Sistemi')]")).click();
+        Assert.assertEquals(driver.getCurrentUrl(), "https://pbs.firat.edu.tr/");
+    }
+
+    @Test public void toUniMain(){
+        driver.findElement(By.xpath("//div[@class='top-right-sub-list']//a[contains(text(),'Üniversite Anasayfa')]")).click();
         Assert.assertEquals(driver.getCurrentUrl(),"https://www.firat.edu.tr/tr");
-        driver.navigate().back();
     }
 
-    @AfterTest public void tc22_quickAccessToPhoneBook(){
-        driver.findElement(By.xpath("//html//body//div//div//div//nav//ul//li//div//ul//li//a[contains(text(),'Telefon Rehberi')]")).click();
-        Assert.assertEquals(driver.getCurrentUrl(),"https://www.firat.edu.tr/tr/contact");
-        driver.navigate().back();
+    @Test public void toPhoneBook(){
+        driver.findElement(By.xpath("//div[@class='top-right-sub-list']//a[contains(text(),'Telefon Rehberi')]")).click();
+        Assert.assertEquals(driver.getCurrentUrl(), "https://www.firat.edu.tr/tr/contact");
     }
 
-    @AfterTest public void tc23_lanEnglish(){
-        driver.findElement(By.xpath("//html//body//div//div//div//nav//ul//li//div//ul//li//a[contains(text(),'English')]")).click();
-        Assert.assertEquals(driver.getCurrentUrl(),"https://testabs.firat.edu.tr/en");
-        driver.navigate().back();
+    @Test public void toLastUpdated(){
+        driver.findElement(By.xpath("//div[@class='part2 container']//a[1]//div[1]")).click();
+        Assert.assertEquals(driver.getCurrentUrl(),"https://abs.firat.edu.tr/tr/askinsen");
     }
 
-    @AfterTest public void tc24_lanTurkish(){
-        driver.findElement(By.xpath("//html//body//div//div//div//nav//ul//li//div//ul//li//a[contains(text(),'Türkçe')]")).click();
-        Assert.assertEquals(driver.getCurrentUrl(),"https://testabs.firat.edu.tr/tr");
-    }
-
-    @AfterSuite public void close() throws InterruptedException {
-        Thread.sleep(3000);
-        driver.close();
+    @AfterClass public void close() throws InterruptedException {
+        Thread.sleep(2000);
+        driver.quit();
     }
 }

@@ -6,7 +6,6 @@ import org.openqa.selenium.chrome.ChromeDriver;
 import org.testng.Assert;
 import org.testng.annotations.*;
 
-
 public class MobileMainPage {
     public WebDriver driver = new ChromeDriver();
 
@@ -96,9 +95,9 @@ public class MobileMainPage {
         Assert.assertFalse(mb);
     }
 
-    @AfterSuite public void close() throws InterruptedException {
+    @AfterClass public void close() throws InterruptedException {
         Thread.sleep(3000);
-        driver.close();
+        driver.quit();
     }
 
 }
