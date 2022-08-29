@@ -14,11 +14,16 @@ public class ExpAutoSuggestionDropdown {
         JavascriptExecutor js = (JavascriptExecutor) driver;
 
         driver.get("https://www.rahulshettyacademy.com/AutomationPractice/");
+
+        driver.findElement(By.xpath("//input[@id='autocomplete']")).clear();
         driver.findElement(By.xpath("//input[@id='autocomplete']")).sendKeys("tu");
-        Thread.sleep(3000);
-        driver.findElement(By.xpath("//input[@id='autocomplete']")).sendKeys(Keys.ARROW_DOWN);
-        driver.findElement(By.xpath("//input[@id='autocomplete']")).sendKeys(Keys.ARROW_DOWN);
-        driver.findElement(By.xpath("//input[@id='autocomplete']")).sendKeys(Keys.ARROW_DOWN);
+        String text;
+        do {
+            driver.findElement(By.xpath("//input[@id='autocomplete']")).sendKeys(Keys.ARROW_DOWN);
+            String val = "return document.getElementById(\"autocomplete\").value;";
+            text = (String) js.executeScript(val);
+        }while (!(text.equals("Turkey")));
+        driver.findElement(By.xpath("//input[@id='autocomplete']")).sendKeys(Keys.ENTER);
         System.out.println(driver.findElement(By.id("autocomplete")).getAttribute("value"));
 
         Thread.sleep(3000);
