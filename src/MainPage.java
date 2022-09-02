@@ -14,6 +14,7 @@ import org.testng.asserts.SoftAssert;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.time.Duration;
 import java.util.List;
@@ -78,27 +79,34 @@ public class MainPage {
         Assert.assertEquals(driver.getCurrentUrl(),"https://jasig.firat.edu.tr/cas/login?service=https%3A%2F%2Fabs.firat.edu.tr%2Ftr%2Flogin%2Ffirat%2Fcas");
     }
 
-    @Test (groups = {"search"}) public void searchBox(){
+    @Test (groups = {"search"}) public void searchBox_visible(){
         driver.findElement(By.id("search")).sendKeys(" ",Keys.ENTER);
-        Assert.assertEquals(driver.getCurrentUrl(),"https://abs.firat.edu.tr/tr");
+        boolean first = driver.findElement(By.xpath("//div[@class='input-select']/div/a[1]")).isDisplayed();
+        Assert.assertFalse(first);
         driver.findElement(By.id("search")).sendKeys("./_*?",Keys.ENTER);
-        Assert.assertEquals(driver.getCurrentUrl(),"https://abs.firat.edu.tr/tr");
+        boolean second = driver.findElement(By.xpath("//div[@class='input-select']/div/a[1]")).isDisplayed();
+        Assert.assertFalse(second);
         driver.findElement(By.id("search")).clear();
-    }
-    @Test (groups = {"search"}) public void searchBox_firstItem(){
-        driver.findElement(By.id("search")).sendKeys("mustafa ulas");
-        WebDriverWait wait = new WebDriverWait(driver,Duration.ofSeconds(5));
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[@id='userOption']//a[1]")));
-        driver.findElement(By.id("search")).sendKeys(Keys.ARROW_DOWN,Keys.ENTER);
-        Assert.assertEquals(driver.getCurrentUrl(),"https://abs.firat.edu.tr/tr/mustafaulas");
+        boolean third = driver.findElement(By.xpath("//div[@class='input-select']/div/a[1]")).isDisplayed();
+        Assert.assertFalse(third);
     }
 
-    @Test (groups = {"search"}) public void searchBox_lastItem() {
-        driver.findElement(By.id("search")).sendKeys("mustafa ulas");
-        WebDriverWait wait = new WebDriverWait(driver,Duration.ofSeconds(5));
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[@id='userOption']//a[1]")));
-        driver.findElement(By.id("search")).sendKeys(Keys.ARROW_DOWN,Keys.ARROW_DOWN,Keys.ENTER);
-        Assert.assertEquals(driver.getCurrentUrl(),"https://abs.firat.edu.tr/tr/m.ulas");
+    @Test (groups = {"search"}) public void searchBox_Item() throws InterruptedException {
+        driver.findElement(By.id("search")).sendKeys("mustafa u");
+        Thread.sleep(200);
+        driver.findElement(By.id("search")).sendKeys(" ");
+        Thread.sleep(200);
+        List<WebElement> searhItems = driver.findElements(By.xpath("//div[@class='input-select']/div/a"));
+        Thread.sleep(200);
+        for (int i = 0 ; i <searhItems.size() ; i++) {
+            driver.findElement(By.cssSelector("#search")).sendKeys(Keys.ARROW_DOWN);
+            Thread.sleep(300);
+            if (searhItems.get(i).getText().contains("MUSTAFA ULAŞ"))
+                driver.findElement(By.cssSelector("#search")).sendKeys(Keys.ENTER);
+            Thread.sleep(300);
+        }
+        Thread.sleep(500);
+        Assert.assertEquals(driver.getCurrentUrl(),"https://abs.firat.edu.tr/tr/mustafaulas");
     }
 
     @Test (groups = {"others"}) public void lastUpdated() throws IOException {
@@ -131,15 +139,14 @@ public class MainPage {
     }
 
     @Test (groups = {"others"}) public void email_ddyo(){
-        String isit = driver.findElement(By.xpath("//p[contains(text(),'ddyo@firat.edu.tr')]")).getAttribute("href");
-        Assert.assertNotNull(isit);
+        boolean isit = driver.findElement(By.xpath("//div[@class='mail']//a")).isEnabled();
+        Assert.assertTrue(isit);
     }
 
     @Test(groups = {"others"}) public void footer_ddyo(){
         driver.findElement(By.linkText("Dijital Dönüşüm ve Yazılım Ofisi")).click();
         Assert.assertEquals(driver.getCurrentUrl(), "http://ddyo.firat.edu.tr/tr");
     }
-
 
     @AfterClass (groups = {"header", "search", "others"}) public void close(){
         driver.quit();

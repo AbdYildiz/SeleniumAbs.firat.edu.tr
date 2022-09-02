@@ -5,10 +5,8 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.testng.asserts.SoftAssert;
-
 import java.io.IOException;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
 
@@ -26,11 +24,6 @@ public class ExpBrokenLink {
             conn.setRequestMethod("HEAD");
             conn.connect();
             soft.assertTrue(conn.getResponseCode() < 400,a.getText() + " broken link");
-//            if (conn.getResponseCode() > 400){
-//                System.out.println(a.getText() + " : broken link");
-//            }else {
-//                System.out.println(a.getText() + " : working link");
-//            }
         }
 
         soft.assertAll();

@@ -1,10 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
 <suite name="All Test Suite">
-    <test name="abs">
+    <test verbose="2" preserve-order="true" name="SeleniumAbs">
+        <groups>
+            <define name="header"></define>
+            <define name="search"></define>
+            <define name="others"></define>
+            <define name="mobileBtn"></define>
+            <run>
+                <include name="header"/>
+                <include name="search"/>
+                <include name="others"/>
+                <include name="mobileBtn"/>
+            </run>
+        </groups>
         <classes>
-            <class name="MobileMainPage"></class>
-            <class name="MainPage"></class>
+            <class name="MainPage"/>
+            <class name="MobileMainPage"/>
+            <class name="Profile"/>
         </classes>
     </test>
 </suite>

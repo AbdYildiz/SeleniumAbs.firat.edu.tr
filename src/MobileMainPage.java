@@ -18,7 +18,6 @@ import java.util.List;
 
 public class MobileMainPage {
     public WebDriver driver = new ChromeDriver();
-
     @BeforeClass (groups = {"mobileBtn", "search", "others"}) public void newDimensions(){
         driver.manage().window().setSize(new Dimension(375,667));
         driver.get("https://abs.firat.edu.tr/tr");
@@ -136,8 +135,8 @@ public class MobileMainPage {
     }
 
     @Test (groups = {"others"}) public void email_ddyo(){
-        String isit = driver.findElement(By.xpath("//p[contains(text(),'ddyo@firat.edu.tr')]")).getAttribute("href");
-        Assert.assertNotNull(isit);
+        boolean isit = driver.findElement(By.xpath("//div[@class='mail']//a")).isEnabled();
+        Assert.assertTrue(isit);
     }
 
     @Test(groups = {"others"}) public void footer_ddyo(){
