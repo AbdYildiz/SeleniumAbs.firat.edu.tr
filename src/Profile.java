@@ -3,15 +3,14 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.testng.Assert;
-import org.testng.annotations.AfterClass;
-import org.testng.annotations.BeforeClass;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
+import org.testng.annotations.*;
 import org.testng.asserts.SoftAssert;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.time.Duration;
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 public class Profile {
@@ -23,10 +22,10 @@ public class Profile {
         driver.manage().window().maximize();
     }
 
-    @BeforeMethod (groups = {"others"}) public void beforeMethod(){
-        driver.get("https://abs.firat.edu.tr/tr/mustafaulas");
-        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(5));
-    }
+//    @BeforeMethod (groups = {"others"}) public void beforeMethod(){
+//        driver.get("https://abs.firat.edu.tr/tr/mustafaulas");
+//        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(5));
+//    }
 
     @Test (groups = {"others"}) public void mobileBtn() throws InterruptedException {
         boolean open = driver.findElement(By.xpath("//span[normalize-space()='Profil']")).isDisplayed();
@@ -104,29 +103,30 @@ public class Profile {
         Assert.assertEquals(driver.findElement(By.xpath("//h5[.='İdari Unvanlar']")).getText(),"İdari Unvanlar");
     }
 
-    @Test (groups = {"others"}) public void leftPanel_Yayinlar() throws InterruptedException {
+    @Test public void leftPanel_Yayinlar() throws InterruptedException {
+        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(5));
         driver.findElement(By.xpath("//ul//li[5]")).click();
         Assert.assertEquals(driver.findElement(By.xpath("//h3[contains(text(),'Yayınlar & Eserler')]")).getText(), "Yayınlar & Eserler");
 
-        driver.findElement(By.xpath("(//div[@class='main-div'])[1]")).click();
-        driver.findElement(By.xpath("(//div[@class='main-div'])[2]")).click();
-        driver.findElement(By.xpath("(//div[@class='main-div'])[3]")).click();
-
-        List<WebElement> makale = driver.findElements(By.xpath("(//div[@class='publications-title'])[1]//h6"));
-        for (int i = 0; i < makale.size(); i++) {
-            driver.findElement(By.xpath("(//button[contains(text(),'Detay')])[" + (i+1) + "]")).click();
+        List<WebElement> main = driver.findElements(By.xpath("(//div[@class='main-div'])"));
+        for (WebElement e:main) {
+            e.click();
             Thread.sleep(300);
-            soft.assertEquals(makale.get(i).getText(), driver.findElement(By.xpath("(//p[contains(text(),'Adı : ')])[" + (i+1) + "]")).getText().split(" : ")[1]);
-            driver.findElement(By.xpath("(//i[@class='fas fa-times'])[" + (i+1) + "]")).click();
         }
-        soft.assertAll();
 
-        List<WebElement> bildiri = driver.findElements(By.xpath("//div[@id='muh3']//div[@class='publications-title']//h6"));
-        for (int i = 0; i < bildiri.size(); i++) {
-            driver.findElement(By.xpath("(//button[contains(text(),'Detay')])[" + (i+22) + "]")).click();
-            Thread.sleep(300);
-            soft.assertEquals(bildiri.get(i).getText(), driver.findElement(By.xpath("(//p[contains(text(),'Bildiri Adı : ')])[" + (i+1) + "]")).getText().split(" : ")[1]);
-            driver.findElement(By.xpath("(//i[@class='fas fa-times'])[" + (i+22) + "]")).click();
+        List<WebElement> section = driver.findElements(By.xpath("(//div[@class='inner-div'])"));
+        for (int i = 0; i <section.size() ; i++) {
+            List<WebElement> buttons = driver.findElements(By.xpath("(//div[@class='inner-div'])["+(i+1)+"]//button"));
+            System.out.println(buttons.size());
+            for (int j = 0; j <buttons.size() ; j++) {
+                buttons.get(j).click();
+                Thread.sleep(300);
+                WebElement closeBtn = driver.findElement(By.xpath("((//div[@class='inner-div'])["+(i+1)+"]//i)["+(j+1)+"]"));
+                boolean tru = closeBtn.isDisplayed();
+                soft.assertTrue(tru);
+                closeBtn.click();
+                Thread.sleep(300);
+            }
         }
         soft.assertAll();
     }

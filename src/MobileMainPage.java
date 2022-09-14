@@ -99,6 +99,7 @@ public class MobileMainPage {
 
     @Test (groups = {"search"}) public void searchBox_lastItem() {
         driver.findElement(By.id("search")).sendKeys("mustafa ulas");
+        driver.findElement(By.id("search")).sendKeys(" ");
         WebDriverWait wait = new WebDriverWait(driver,Duration.ofSeconds(5));
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[@id='userOption']//a[1]")));
         driver.findElement(By.id("search")).sendKeys(Keys.ARROW_DOWN,Keys.ARROW_DOWN,Keys.ENTER);
